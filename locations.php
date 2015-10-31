@@ -4,26 +4,31 @@ include '/connection/connect.inc.php';
 
 
 
-
+//If post UpDate vaiable is set run following code otherwise return JASON of current markers.
 if(isset($_POST['upDate'])){
 
-	//echo ($_POST['upDate']);
+	//Check what type of message is coming, new, update, edit etc... 0 = new, 1 = add message to existing hazard
+    //3 = edit\delete message or marker status, validated as an integer before storing in variable.
+
 	if(is_int($_POST['messageOrUpdate'])){
         $messageOrUpdate = $_POST['messageOrUpdate'];
     }
 
-    if(is_int($_POST['latT'])){
+    //setting long and lat coordinates- need to sanitise and validate
+    if(isset($_POST['latT'])){
         $latT = $_POST['latT'];
     }
-
-    if(is_int($_POST['longT'])){
-        $messageOrUpdate = $_POST['LongT'];
+    if(isset($_POST['longT'])){
+        $LongT = $_POST['LongT'];
     }
 
-
-
-	$message =  strip_tags(trim($_POST['message']) );
+    //setting messages var, need to further sanitise and validate
+    $message =  strip_tags(trim($_POST['message']) );
 	echo "$message";
+
+
+
+
 
 }else{
 	echo json_encode(getData($connection));

@@ -2,7 +2,7 @@
 
 include '/connection/connect.inc.php';
 
-
+$timeFrame = 3;
 
 //If post UpDate vaiable is set run following code otherwise return JASON of current markers.
 if(isset($_POST['upDate'])){
@@ -31,16 +31,18 @@ if(isset($_POST['upDate'])){
 
 
 }else{
-	echo json_encode(getData($connection));
+	echo json_encode(getData($connection, $timeFrame));
 }
 
 
 
 
-function getData($connection){
+function getData($connection, $timeFrame){
 
     //Get data from last 6 hours of votes
-    $sqlQuery = "SELECT * FROM mwapp";
+    $sqlQuery = "SELECT flag.flag_ID, hazard.hazard_Image, flag.longT, flag.latT FROM flag
+                LEFT JOIN hazard ON hazard.hazard_ID=flag.hazard_Image
+                WHERE flag.flag_TimeStamp > SUBDATE(now(), INTERVAL $timeFrame HOUR)";
 
 
     $result = mysqli_query($connection,$sqlQuery);

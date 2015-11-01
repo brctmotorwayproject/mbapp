@@ -37,31 +37,47 @@ if(isset($_POST['upDate'])){
 
 
 
+//this function returns an array of marker objects and the associated messages.
 function getData($connection, $timeFrame){
 
-    //Get data from last 6 hours of votes
-    $sqlQuery = "SELECT flag.flag_ID, hazard.hazard_Image, flag.longT, flag.latT FROM flag
+    //SQL query to return each marker from number for hours set in timeFrame Variable from current time.
+    $flagQuery = "SELECT flag.flag_ID, hazard.hazard_Image, flag.longT, flag.latT FROM flag
                 LEFT JOIN hazard ON hazard.hazard_ID=flag.hazard_Image
                 WHERE flag.flag_TimeStamp > SUBDATE(now(), INTERVAL $timeFrame HOUR)";
 
 
-    $result = mysqli_query($connection,$sqlQuery);
+    $flagResult = mysqli_query($connection,$flagQuery);
 
-	$data = array();
-	
-    while($row = mysqli_fetch_assoc($result)){
-        
-		$lineArray = array();
-		
-		
+    $makerObjects = array();
 
-		$data [] = $row;
+    $staticIndex= 0;
+
+    //Build array of messages for each result returned from flag query, mesage 1, 2, 3 etc for each marker
+    while($row = mysqli_fetch_assoc($flagResult)){
+        $marker = array();
+
+        $marker [$staticIndex] = $row;
+
+		$markerMessages = array();
+
+        //Query returns messages associated with each marker. they are placed in array for each marker object
+        $messageQuery= "SELECT message_ID, message_Text, message_TimeStamp FROM message WHERE flag_ID= '{$row['flag_ID']}'" ;
+
+        $messageResult=mysqli_query($connection,$messageQuery);
+
+        while($mRow = mysqli_fetch_assoc($messageResult)){
+            $markerMessages[]= $mRow;
+        }
+
+        $marker[$staticIndex]['message']=$markerMessages;
+
+        $makerObjects[] = $marker;
+
     }
 	
-	return $data;
+	return $makerObjects;
 }
 
-//echo json_encode(getData($connection));
 
 ?>
 

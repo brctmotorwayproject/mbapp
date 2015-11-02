@@ -10,23 +10,47 @@ if(isset($_POST['upDate'])){
 	//Check what type of message is coming, new, update, edit etc... 0 = new, 1 = add message to existing hazard
     //3 = edit\delete message or marker status, validated as an integer before storing in variable.
 
-	if(is_int($_POST['messageOrUpdate'])){
-        $messageOrUpdate = $_POST['messageOrUpdate'];
+	if(is_numeric($_POST['upDate'])){
+        $messageOrUpdate = $_POST['upDate'];
+    }
+
+    if(is_numeric($_POST['m_ID'])){
+        $message_ID = $_POST['m_ID'];
     }
 
     //setting long and lat coordinates- need to sanitise and validate
-    if(isset($_POST['latT'])){
+    if(is_numeric($_POST['latT'])){
         $latT = $_POST['latT'];
     }
-    if(isset($_POST['longT'])){
-        $LongT = $_POST['LongT'];
+    if(is_numeric($_POST['longT'])){
+        $longT = $_POST['longT'];
     }
 
     //setting messages var, need to further sanitise and validate
     $message =  strip_tags(trim($_POST['message']) );
-	echo "$message";
+
+    echo ("$message_ID");
+    echo ("<br>$message");
+    echo ("<br>$longT");
+    echo ("<br>$latT");
+    echo ("<br>$messageOrUpdate");
 
 
+$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES (1, $latT, $longT )";
+
+  $markerInsertResult = mysqli_query($connection,$insertQuery);
+
+    echo("<br> marker insert result $markerInsertResult");
+
+  $markerInsertID = mysqli_insert_id($connection);
+
+    echo ("<br> marker insert id $markerInsertID");
+
+  $messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $markerInsertID, \"$message\" )";
+
+    $messageInsertResult = mysqli_query($connection, $messageInsertQuery);
+
+    echo("<br> message insert result $messageInsertResult");
 
 
 
@@ -48,15 +72,15 @@ function getData($connection, $timeFrame){
 
     $flagResult = mysqli_query($connection,$flagQuery);
 
-    $makerObjects = array();
 
-    $staticIndex= 0;
+    $marker = array();
+    $arrayIndex= 0;
 
     //Build array of messages for each result returned from flag query, mesage 1, 2, 3 etc for each marker
     while($row = mysqli_fetch_assoc($flagResult)){
-        $marker = array();
 
-        $marker [$staticIndex] = $row;
+
+        $marker [$arrayIndex] = $row;
 
 		$markerMessages = array();
 
@@ -69,13 +93,15 @@ function getData($connection, $timeFrame){
             $markerMessages[]= $mRow;
         }
 
-        $marker[$staticIndex]['message']=$markerMessages;
+        $marker[$arrayIndex]['message']=$markerMessages;
 
-        $makerObjects[] = $marker;
 
+
+        $arrayIndex++;
     }
 	
-	return $makerObjects;
+
+    return $marker;
 }
 
 

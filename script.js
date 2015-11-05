@@ -52,13 +52,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 		//drawing map on webpage @ id map-canvas
         map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
 		
-		//this adds a listener to the map for click and touches, when click the addmarker() functions is called and draws a marker at the location clicked. 
-		google.maps.event.addListener(map, 'click', function(event) {
-		
-		// this marker is added at load, "need to make this drag-able"
-		addMarker(event.latLng, map);
-		
-		});
+
 		
 		//This waits for the map to be at idle after loading the web page. then Runs what ever is inside first set of brackets.
 		google.maps.event.addListenerOnce( map, 'idle', function() {
@@ -175,6 +169,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 			data: markerData,
 			success: function(data) {
 				console.log(data['success']);
+				voteMarker.setMap(null);
+				drawAllMarkers();
 			},
 			error: function(data){
 				alert('error posting data');
@@ -198,7 +194,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 	// Sets the map on all markers in the array.
 	function setMapOnAll(map) {
 		for (var i = 0; i < markerArray.length; i++) {
-			markerArray[i][i].setMap(map);
+			markerArray[i][0].setMap(map);
 		}
 	}
 
@@ -207,7 +203,9 @@ $( document ).on( "pageinit", "#map-page", function() {
 	function deleteOverlays() {
 		if (markerArray) {
 			for (i in markerArray) {
-				markerArray[i][i].setMap(null);
+			
+			console.log(i);
+				markerArray[i][0].setMap(null);
 			}
 			markerArray.length = 0;
 		}

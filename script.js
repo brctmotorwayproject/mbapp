@@ -16,6 +16,8 @@ var voteMarker;
 //Variable set with default gps coordinates, this is used to center map initially if a your current location cannot be found.
 var defaultLatLng = new google.maps.LatLng(45.8667, 170.5000);  // Default to Dunedin when no geolocation support
 
+
+
 $( document ).on( "pageinit", "#map-page", function() {
 
 	
@@ -89,7 +91,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 			markerArray.push([marker,markerBubble]);
 		
 		//print marker position to console - used for debug
-        	console.log(marker.getPosition());
+        	//console.log(marker.getPosition());
 		
         }
 
@@ -116,7 +118,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 						$.each(data.message, function(i, message){
 
-							console.log(message.message_Text);
+							//console.log(message.message_Text);
 
 							messagebox += "<H3>" + message.message_TimeStamp + "</H3>" + "<p>" + message.message_Text +"</p>";
 						});
@@ -150,7 +152,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 	$('#confirmButton').click(function(){
 
-
+		var iconSelected = $('input[name=radio-choice-b]:checked').val();
+		console.log(iconSelected);
 		var $formMessage = $('#messageText');
 
 		console.log(voteMarker.getPosition().lat());
@@ -159,7 +162,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 			upDate: 0,
 			latT: voteMarker.getPosition().lat(),
 			longT: voteMarker.getPosition().lng(),
-			message: $formMessage.val()
+			message: $formMessage.val(),
+			hazIcon: iconSelected
 
 		};
 
@@ -210,5 +214,20 @@ $( document ).on( "pageinit", "#map-page", function() {
 			markerArray.length = 0;
 		}
 	}
+	
+	$('#voteButton').click(function() { 
+	
+		$(this).hide();
+		$('#confirmLocation').show();
+	
+	})
+	
+	$('#confirmLocation').click(function() {
+	
+		$(this).toggle();
+		$('#voteButton').show();
+		
+	})
+	
 	
 });

@@ -25,6 +25,9 @@ if(isset($_POST['upDate'])){
     if(is_numeric($_POST['longT'])){
         $longT = $_POST['longT'];
     }
+	if(is_numeric($_POST['hazIcon'])){
+		$hazIcon = $_POST['hazIcon'];
+	}
 
     //setting messages var, need to further sanitise and validate
     $message =  strip_tags(trim($_POST['message']) );
@@ -34,9 +37,11 @@ if(isset($_POST['upDate'])){
     echo ("<br>$longT");
     echo ("<br>$latT");
     echo ("<br>$messageOrUpdate");
+	echo ("<br>$hazIcon");
+	
 
 
-$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES (1, $latT, $longT )";
+$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES ($hazIcon, $latT, $longT )";
 
   $markerInsertResult = mysqli_query($connection,$insertQuery);
 

@@ -81,12 +81,21 @@ $( document ).on( "pageinit", "#map-page", function() {
                 map: map
             });
 			
+			marker.addListener('click', function() {
+			
+				markerBubble.open(map, marker);
+				//$('#addMesPop').popup('open');
+			
+			});
+
+			
+			
 			//add create speech bubble with text stored in contentMessage
             var markerBubble = new google.maps.InfoWindow({
                 content: contentMessage
         });
 			//add speech bubble to map and marker created just above.
-        	markerBubble.open(map, marker);
+        	//markerBubble.open(map, marker);
 			//add marker and bubble to array
 			markerArray.push([marker,markerBubble]);
 		
@@ -122,7 +131,9 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 							messagebox += "<H3>" + message.message_TimeStamp + "</H3>" + "<p>" + message.message_Text +"</p>";
 						});
-
+							
+						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' >Add Message</a>";
+							
 						addMarker(LatLng, map, data.hazard_Image, messagebox);
 					});
 
@@ -228,6 +239,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 		$('#voteButton').show();
 		
 	})
+	
+	
 	
 	
 });

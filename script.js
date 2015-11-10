@@ -11,6 +11,8 @@ var map;
 // Map Markers sotred in an array so they can be accessed later but other functions.
 var markerArray = [];
 
+var markerIDforUpdate;
+
 var voteMarker;
 
 //Variable set with default gps coordinates, this is used to center map initially if a your current location cannot be found.
@@ -91,7 +93,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 			
 			
 			//add create speech bubble with text stored in contentMessage
-            var markerBubble = new google.maps.InfoWindow({
+          var markerBubble = new google.maps.InfoWindow({
                 content: contentMessage
         });
 			//add speech bubble to map and marker created just above.
@@ -132,8 +134,11 @@ $( document ).on( "pageinit", "#map-page", function() {
 							messagebox += "<H3>" + message.message_TimeStamp + "</H3>" + "<p>" + message.message_Text +"</p>";
 						});
 							
-						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' >Add Message</a>";
-							
+						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a>";
+						
+						console.log(data.flag_ID);
+						
+						//$('#pp-12').click(function(){ window.fk =  });
 						addMarker(LatLng, map, data.hazard_Image, messagebox);
 					});
 
@@ -154,7 +159,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 		});
 
 
-		var markerBubble = new google.maps.InfoWindow({
+		 markerBubble = new google.maps.InfoWindow({
 			content: "Drag me to the location you want to report on."
 		});
 		//add speech bubble to map and marker created just above.
@@ -195,6 +200,34 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 
 
+	});
+	
+	$('#confirmUpdate').click(function() {
+	
+		var formUpdateMessge = $('#updateText');
+		
+		var updateData ={
+			update: 1,
+			m_ID: markerIDforUpdate
+			message: formUpdateMessge.val();
+		}
+		
+		
+		$.ajax({
+			type: 'POST',
+			url: 'http://54.254.182.76/mapmob/locations.php',
+			data: updateData,
+			success: function(data) {
+				console.log(data['success']);
+				voteMarker.setMap(null);
+				drawAllMarkers();
+			},
+			error: function(data){
+				alert('error posting data');
+				console.log(data['error']);
+			}
+		});
+	
 	});
 
 	function deleteMarkers() {
@@ -240,7 +273,27 @@ $( document ).on( "pageinit", "#map-page", function() {
 		
 	})
 	
+	/*
+	$("a").on('click',function () {
 	
+			var mesidtest = $('a').data();
+			console.log(mesidtest);
+			
+			console.log('clicked');
+		
+	})
+	*/
 	
+
 	
 });
+
+	function setMarkID(idnum){
+	
+		
+		markerIDforUpdate = idnum;
+			
+			console.log('set message id to ' + markerIDforUpdate);
+	
+	}
+	

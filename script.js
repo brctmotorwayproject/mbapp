@@ -172,8 +172,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 		console.log(iconSelected);
 		var $formMessage = $('#messageText');
 
-		console.log(voteMarker.getPosition().lat());
-		console.log(voteMarker.getPosition().lng());
+		//console.log(voteMarker.getPosition().lat());
+		//console.log(voteMarker.getPosition().lng());
 		var markerData = {
 			upDate: 0,
 			latT: voteMarker.getPosition().lat(),
@@ -182,6 +182,8 @@ $( document ).on( "pageinit", "#map-page", function() {
 			hazIcon: iconSelected
 
 		};
+		
+		console.log(markerData);
 
 		$.ajax({
 			type: 'POST',
@@ -207,11 +209,12 @@ $( document ).on( "pageinit", "#map-page", function() {
 		var formUpdateMessge = $('#updateText');
 		
 		var updateData ={
-			update: 1,
-			m_ID: markerIDforUpdate
-			message: formUpdateMessge.val();
-		}
+			upDate: 1,
+			m_ID: markerIDforUpdate,
+			message: formUpdateMessge.val()
+		};
 		
+		console.log(updateData);
 		
 		$.ajax({
 			type: 'POST',
@@ -219,7 +222,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 			data: updateData,
 			success: function(data) {
 				console.log(data['success']);
-				voteMarker.setMap(null);
+				deleteOverlays();
 				drawAllMarkers();
 			},
 			error: function(data){

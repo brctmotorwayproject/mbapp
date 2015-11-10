@@ -23,11 +23,11 @@ if(isset($_POST['upDate'])){
     $coordRegex = "^[+-]?\d+\.\d+, ?[+-]?\d+\.\d+$";
 
     if(is_numeric($_POST['latT'])){
-        if(preg_match("/$coordRegex/", $_POST['latT']))
+        //if(preg_match("/$coordRegex/", $_POST['latT']))
             $latT = $_POST['latT'];
     }
     if(is_numeric($_POST['longT'])){
-        if(preg_match("/$coordRegex/", $_POST['longT']))
+        //if(preg_match("/$coordRegex/", $_POST['longT']))
             $longT = $_POST['longT'];
     }
 	if(is_numeric($_POST['hazIcon'])){
@@ -38,7 +38,7 @@ if(isset($_POST['upDate'])){
     //checks if the message matches the expression before setting
     $messageRegex= "^[a-zA-Z0-9_.,]{1,141}$";
     
-    if(preg_match("/$messageRegex/", $_POST['message']))
+    //if(preg_match("/$messageRegex/", $_POST['message']))
         $message = $_POST['message'];
     
     //$message =  strip_tags(trim($_POST['message']) );
@@ -51,26 +51,34 @@ if(isset($_POST['upDate'])){
 	echo ("<br>$hazIcon");
 	
 
+		if($messageOrUpdate == 0){
+		$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES ($hazIcon, $latT, $longT )";
 
-$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES ($hazIcon, $latT, $longT )";
+		  $markerInsertResult = mysqli_query($connection,$insertQuery);
 
-  $markerInsertResult = mysqli_query($connection,$insertQuery);
+			echo("<br> marker insert result $markerInsertResult");
 
-    echo("<br> marker insert result $markerInsertResult");
+		  $markerInsertID = mysqli_insert_id($connection);
 
-  $markerInsertID = mysqli_insert_id($connection);
+			echo ("<br> marker insert id $markerInsertID");
+			//remove all characters except digits
+			$markerInsertID = filter_var($markerInsertID, FILTER_SANITIZE_NUMBER_INT); 
 
-    echo ("<br> marker insert id $markerInsertID");
-    //remove all characters except digits
-    $markerInsertID = filter_var($markerInsertID, FILTER_SANITIZE_NUMBER_INT); 
+		  $messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $markerInsertID, \"$message\" )";
 
-  $messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $markerInsertID, \"$message\" )";
+			$messageInsertResult = mysqli_query($connection, $messageInsertQuery);
 
-    $messageInsertResult = mysqli_query($connection, $messageInsertQuery);
+			echo("<br> message insert result $messageInsertResult");
 
-    echo("<br> message insert result $messageInsertResult");
+		}else if($messageOrUpdate == 1){
+		
+			$messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $message_ID, \"$message\" )";
 
+			$messageInsertResult = mysqli_query($connection, $messageInsertQuery);
 
+			echo("<br> message insert result $messageInsertResult");
+		
+		}
 
 }else{
 	echo json_encode(getData($connection, $timeFrame));

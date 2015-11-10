@@ -132,7 +132,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 					//iterate through JSON array and convert data into map markers
 					$.each(datas, function(i, data) {
 
-						var messagebox = "";
+						var messagebox = "<div class=' '>";
 
 						var LatLng = new google.maps.LatLng(data.latT , data.longT);
 						//console.log()
@@ -144,7 +144,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 							messagebox += "<H3>" + message.message_TimeStamp + "</H3>" + "<p>" + message.message_Text +"</p>";
 						});
 							
-						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a>";
+						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a> </div>";
 						
 						console.log(data.flag_ID);
 						

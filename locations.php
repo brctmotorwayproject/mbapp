@@ -19,18 +19,29 @@ if(isset($_POST['upDate'])){
     }
 
     //setting long and lat coordinates- need to sanitise and validate
+    //checks if coordinates match the expression before setting
+    $coordRegex = "^[+-]?\d+\.\d+, ?[+-]?\d+\.\d+$";
+
     if(is_numeric($_POST['latT'])){
-        $latT = $_POST['latT'];
+        if(preg_match("/$coordRegex/", $_POST['latT']))
+            $latT = $_POST['latT'];
     }
     if(is_numeric($_POST['longT'])){
-        $longT = $_POST['longT'];
+        if(preg_match("/$coordRegex/", $_POST['longT']))
+            $longT = $_POST['longT'];
     }
 	if(is_numeric($_POST['hazIcon'])){
 		$hazIcon = $_POST['hazIcon'];
 	}
 
     //setting messages var, need to further sanitise and validate
-    $message =  strip_tags(trim($_POST['message']) );
+    //checks if the message matches the expression before setting
+    $messageRegex= "^[a-zA-Z0-9_.,]{1,141}$";
+    
+    if(preg_match("/$messageRegex/", $_POST['message']))
+        $message = $_POST['message'];
+    
+    //$message =  strip_tags(trim($_POST['message']) );
 
     echo ("$message_ID");
     echo ("<br>$message");
@@ -50,6 +61,8 @@ $insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES ($hazIcon, $l
   $markerInsertID = mysqli_insert_id($connection);
 
     echo ("<br> marker insert id $markerInsertID");
+    //remove all characters except digits
+    $markerInsertID = filter_var($markerInsertID, FILTER_SANITIZE_NUMBER_INT); 
 
   $messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $markerInsertID, \"$message\" )";
 

@@ -16,9 +16,9 @@ var markerIDforUpdate;
 var voteMarker;
 
 //Variable set with default gps coordinates, this is used to center map initially if a your current location cannot be found.
-var defaultLatLng = new google.maps.LatLng(45.8667, 170.5000);  // Default to Dunedin when no geolocation support
+var defaultLatLng = new google.maps.LatLng(-45.7307748, 170.5857255);  // Default to Blueskin bay when no geolocation support
 
-
+var refreshMarkers = false;
 
 $( document ).on( "pageinit", "#map-page", function() {
 
@@ -132,7 +132,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 					//iterate through JSON array and convert data into map markers
 					$.each(datas, function(i, data) {
 
-						var messagebox = "<div class=' '>";
+						var messagebox = "<div class='bubbles'>";
 
 						var LatLng = new google.maps.LatLng(data.latT , data.longT);
 						//console.log()
@@ -141,11 +141,17 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 							//console.log(message.message_Text);
 
-							messagebox += "<H3>" + message.message_TimeStamp + "</H3>" + "<p>" + message.message_Text +"</p>";
+							messagebox += "<H3>" + message.mesDate + "</H3>" + "<p>" + message.message_Text +"</p>";
 						});
-							
-						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a> </div>";
 						
+						if(data.resolved == 0){
+						
+						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-mail ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a> <a href='#resolveHazPop' data-rel='popup' data-position-to='window' data-transition='pop' class='ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Resolve Hazard</a></div>";
+						} else{
+							
+							messagebox += "<H3> Hazard Resolved</H3></div>";
+							
+						}
 						console.log(data.flag_ID);
 						
 						//$('#pp-12').click(function(){ window.fk =  });
@@ -242,6 +248,35 @@ $( document ).on( "pageinit", "#map-page", function() {
 		});
 	
 	});
+	
+		$('#resolveHazard').click(function() {
+	
+		var formResolveMessge = $('#ResolveText');
+		
+		var updateData ={
+			upDate: 2,
+			m_ID: markerIDforUpdate,
+			message: formResolveMessge.val()
+		};
+		
+		console.log(updateData);
+		
+		$.ajax({
+			type: 'POST',
+			url: 'http://54.254.182.76/mapmob/locations.php',
+			data: updateData,
+			success: function(data) {
+				console.log(data['success']);
+				deleteOverlays();
+				drawAllMarkers();
+			},
+			error: function(data){
+				alert('error posting data');
+				console.log(data['error']);
+			}
+		});
+	
+	});
 
 	function deleteMarkers() {
 		clearMarkers();
@@ -283,6 +318,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 	
 		$(this).toggle();
 		$('#voteButton').show();
+		$('#popupDialog').popup('open');
 		
 	})
 	
@@ -296,6 +332,14 @@ $( document ).on( "pageinit", "#map-page", function() {
 		
 	})
 	*/
+	
+	setInterval(function() {
+		
+		if(refreshMarkers == true){
+		console.log('timer tick');
+		}
+		
+	}, 6000);
 	
 
 	

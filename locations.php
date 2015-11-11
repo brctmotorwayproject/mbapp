@@ -78,6 +78,17 @@ if(isset($_POST['upDate'])){
 
 			echo("<br> message insert result $messageInsertResult");
 		
+		}else if($messageOrUpdate == 2){
+			
+			$messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $message_ID, \"$message\" )";
+
+			$messageInsertResult = mysqli_query($connection, $messageInsertQuery);
+			
+			$hazardResolveQuery = "UPDATE flag SET hazard_Image=5, resolved=1 WHERE flag_ID=$message_ID;";
+			
+			$hazardResolveResult = mysqli_query($connection, $hazardResolveQuery);
+
+			echo("<br> message insert result $messageInsertResult $hazardResolveResult");
 		}
 
 }else{
@@ -91,7 +102,7 @@ if(isset($_POST['upDate'])){
 function getData($connection, $timeFrame){
 
     //SQL query to return each marker from number for hours set in timeFrame Variable from current time.
-    $flagQuery = "SELECT flag.flag_ID, hazard.hazard_Image, flag.longT, flag.latT FROM flag
+    $flagQuery = "SELECT flag.flag_ID, hazard.hazard_Image, flag.longT, flag.latT, flag.resolved FROM flag
                 LEFT JOIN hazard ON hazard.hazard_ID=flag.hazard_Image
                 WHERE flag.flag_TimeStamp > SUBDATE(now(), INTERVAL $timeFrame HOUR)";
 
@@ -111,7 +122,7 @@ function getData($connection, $timeFrame){
 		$markerMessages = array();
 
         //Query returns messages associated with each marker. they are placed in array for each marker object
-        $messageQuery= "SELECT message_ID, message_Text, message_TimeStamp FROM message WHERE flag_ID= '{$row['flag_ID']}'" ;
+        $messageQuery= "SELECT message_ID, message_Text, DATE_FORMAT(message_TimeStamp, '%b %d %Y %h:%i %p') as mesDate FROM message WHERE flag_ID= '{$row['flag_ID']}'" ;
 
         $messageResult=mysqli_query($connection,$messageQuery);
 

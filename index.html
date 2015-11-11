@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -28,7 +29,8 @@
 		<div class="ui-field-contain" data-role="fieldcontain">
 		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all" data-form="ui-btn-up-a" data-theme="a" data-icon="star" id="voteButton">Add Marker</button>
 		
-		<a href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none" id="confirmLocation">Confirm Location</a>
+		<!--<a href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b" style="display: none" id="confirmLocation">Confirm Location</a> -->
+		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all" data-form="ui-btn-up-a" data-theme="a" data-icon="star" id="confirmLocation" style="display: none">Confirm Location</button>
 		<div data-role="popup" id="popupDialog" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
 		<div data-role="header" data-theme="a">
 		<h1>Enter Message About Hazard</h1>
@@ -39,32 +41,60 @@
 				<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
 				<legend>Select A Icon</legend>
 				<input name="radio-choice-b" id="radio-choice-c" value="1" checked="checked" type="radio">
-				<label for="radio-choice-c"><img src='cow_small.png'></label>
+				<label for="radio-choice-c"><img src='images/cow_small.png'></label>
 				<input name="radio-choice-b" id="radio-choice-d" value="2" type="radio">
-				<label for="radio-choice-d"><img src='snow_small.png'></label>
+				<label for="radio-choice-d"><img src='images/snow_small.png'></label>
 				<input name="radio-choice-b" id="radio-choice-e" value="3" type="radio">
-				<label for="radio-choice-e"><img src='works_small.png'></label>
+				<label for="radio-choice-e"><img src='images/works_small.png'></label>
+
+					<input name="radio-choice-b" id="radio-choice-f" value="4" type="radio">
+					<label for="radio-choice-f"><img src='images/crash_small.png'></label>
+
+					<input name="radio-choice-b" id="radio-choice-h" value="5" type="radio">
+					<label for="radio-choice-h"><img src='images/go_small.png'></label>
+
+					<input name="radio-choice-b" id="radio-choice-i" value="6" type="radio">
+					<label for="radio-choice-i"><img src='images/yo_small.png'></label>
+
+					<input name="radio-choice-b" id="radio-choice-j" value="7" type="radio">
+					<label for="radio-choice-j"><img src='images/stop_small.png'></label>
 				</fieldset>
 				
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow" id="confirmButton">Confirm</a>
+
 		</div>
 		</div>
 		
 		
 		<div data-role="popup" id="addMesPop" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
 		<div data-role="header" data-theme="a">
-		<h1>Enter Message About Hazard</h1>
+		<h1>Add Message</h1>
 		</div>
 		<div role="main" class="ui-content">
         <input name="Message" id="updateText" value="" placeholder="Message" data-theme="a" type="text">
 		
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow" id="confirmUpdate">Confirm</a>
+		
+		</div>
+		</div>	
+		
+		<div data-role="popup" id="resolveHazPop" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+		<div data-role="header" data-theme="a">
+		<h1>Resolve Hazard</h1>
+		</div>
+		<div role="main" class="ui-content">
+        <input name="Message" id="ResolveText" value="" placeholder="Message" data-theme="a" type="text">
+		
+        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
+        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow" id="resolveHazard">Resolve</a>
+        
 		</div>
 		</div>
 		
 		
+	</div>
 	</div>
 
 </body>

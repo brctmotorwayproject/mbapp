@@ -20,12 +20,21 @@ var defaultLatLng = new google.maps.LatLng(-45.7307748, 170.5857255);  // Defaul
 
 var refreshMarkers = false;
 
-$( document ).on( "pageinit", "#map-page", function() {
 
-	
+$(document).ready(function(){
+	$('#mapresize').click(function(){
+		setTimeout(function(){
+			google.maps.event.trigger(map,'resize');
+		}, 500);
+		
+	})
 
-    
 
+});
+
+
+$( document ).on( "pageinit", "#two", function() {
+//.ready(function(){
 	
 	if ( navigator.geolocation ) {
         function success(pos) {
@@ -176,13 +185,17 @@ $( document ).on( "pageinit", "#map-page", function() {
 
 
 		 markerBubble = new google.maps.InfoWindow({
-			content: "Drag me to the location you want to report on."
+			content: "<p class='bubbles'>Drag me to the location you want to report on.</p>"
 		});
 		//add speech bubble to map and marker created just above.
 		markerBubble.open(map, voteMarker);
 	});
 
 	$('#confirmButton').click(function(){
+	
+		$('#confirmLocation').hide();
+		$('#voteButton').show();
+		$('#viewButton').hide();
 
 		var iconSelected = $('input[name=radio-choice-b]:checked').val();
 		console.log(iconSelected);
@@ -223,6 +236,7 @@ $( document ).on( "pageinit", "#map-page", function() {
 	$('#confirmUpdate').click(function() {
 	
 		var formUpdateMessge = $('#updateText');
+		
 		
 		var updateData ={
 			upDate: 1,
@@ -311,15 +325,26 @@ $( document ).on( "pageinit", "#map-page", function() {
 	
 		$(this).hide();
 		$('#confirmLocation').show();
+		$('#viewButton').show();
 	
 	})
 	
 	$('#confirmLocation').click(function() {
 	
-		$(this).toggle();
-		$('#voteButton').show();
+		
+		//$('#voteButton').show();
+		
 		$('#popupDialog').popup('open');
 		
+	})
+	
+	$('#viewButton').click(function() {
+	
+		$(this).hide();
+		$('#voteButton').show();
+		$('#confirmLocation').hide();
+		voteMarker.setMap(null);
+		drawAllMarkers();
 	})
 	
 	/*
@@ -341,16 +366,21 @@ $( document ).on( "pageinit", "#map-page", function() {
 		
 	}, 6000);
 	
-
+	$('#mapresize').click(function() {
 	
+		google.maps.event.trigger(map,'resize');
+	
+	})
+	
+
 });
 
-	function setMarkID(idnum){
+function setMarkID(idnum){
+
 	
+	markerIDforUpdate = idnum;
 		
-		markerIDforUpdate = idnum;
-			
-			console.log('set message id to ' + markerIDforUpdate);
-	
-	}
+	console.log('set message id to ' + markerIDforUpdate);
+
+}
 	

@@ -16,7 +16,7 @@ var voteMarker;
 var defaultLatLng = new google.maps.LatLng(-45.7307748, 170.5857255);  // Default to Blueskin bay when no geolocation support
 var currentLatLng ;
 //var refreshMarkers = false;
-
+var ajaxurl = 'http://54.254.182.76/locations.php';
 
 $( document ).on( "pageinit", "#two", function() {
 //.ready(function(){
@@ -116,7 +116,7 @@ $( document ).on( "pageinit", "#two", function() {
 			//type of ajax call
 			type: 'GET',
 			//location of webpage that generates data in JSON format(RESTful)
-			url: 'http://54.254.182.76/locations.php',
+			url: ajaxurl,
 			success: function(mPoints) {
 
 				//on successfully getting data do the following
@@ -200,7 +200,7 @@ $( document ).on( "pageinit", "#two", function() {
 
 		$.ajax({
 			type: 'POST',
-			url: 'http://54.254.182.76/locations.php',
+			url: ajaxurl,
 			data: markerData,
 			success: function(data) {
 				console.log(data['success']);
@@ -234,7 +234,7 @@ $( document ).on( "pageinit", "#two", function() {
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://54.254.182.76/locations.php',
+			url: ajaxurl,
 			data: updateData,
 			success: function(data) {
 				console.log(data['success']);

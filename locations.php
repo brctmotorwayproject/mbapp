@@ -4,7 +4,7 @@ include '/connection/connect.inc.php';
 
 $timeFrame = 3;
 
-//If post UpDate vaiable is set run following code otherwise return JASON of current markers.
+//If post UpDate vaiable is set run following code otherwise return JSON of current markers.
 if(isset($_POST['upDate'])){
 
 	//Check what type of message is coming, new, update, edit etc... 0 = new, 1 = add message to existing hazard
@@ -20,14 +20,14 @@ if(isset($_POST['upDate'])){
 
     //setting long and lat coordinates- need to sanitise and validate
     //checks if coordinates match the expression before setting
-    $coordRegex = "^[+-]?\d+\.\d+, ?[+-]?\d+\.\d+$";
+    $coordRegex = "^[+-]?\d+\.\d+$";
 
     if(is_numeric($_POST['latT'])){
-        //if(preg_match("/$coordRegex/", $_POST['latT']))
+        if(preg_match("/$coordRegex/", $_POST['latT']))
             $latT = $_POST['latT'];
     }
     if(is_numeric($_POST['longT'])){
-        //if(preg_match("/$coordRegex/", $_POST['longT']))
+        if(preg_match("/$coordRegex/", $_POST['longT']))
             $longT = $_POST['longT'];
     }
 	if(is_numeric($_POST['hazIcon'])){
@@ -36,20 +36,13 @@ if(isset($_POST['upDate'])){
 
     //setting messages var, need to further sanitise and validate
     //checks if the message matches the expression before setting
-    $messageRegex= "^[a-zA-Z0-9_.,]{1,141}$";
+    $messageRegex= "^[a-zA-Z0-9_.,()?! ]{1,141}$";
     
-    //if(preg_match("/$messageRegex/", $_POST['message']))
+    if(preg_match("/$messageRegex/", $_POST['message']))
         $message = $_POST['message'];
     
     //$message =  strip_tags(trim($_POST['message']) );
 
-    echo ("$message_ID");
-    echo ("<br>$message");
-    echo ("<br>$longT");
-    echo ("<br>$latT");
-    echo ("<br>$messageOrUpdate");
-	echo ("<br>$hazIcon");
-	
 
 		if($messageOrUpdate == 0){
 		$insertQuery ="INSERT INTO flag (hazard_Image, latT, LongT) VALUES ($hazIcon, $latT, $longT )";
@@ -73,10 +66,16 @@ if(isset($_POST['upDate'])){
 		}else if($messageOrUpdate == 1){
 		
 			$messageInsertQuery = "INSERT INTO message (flag_ID, message_Text) VALUES ( $message_ID, \"$message\" )";
-
+			
 			$messageInsertResult = mysqli_query($connection, $messageInsertQuery);
+			
+			$updateTimeStampFlagQuery = "UPDATE flag SET flag_TimeStamp=now() WHERE flag_ID=$message_ID;";
+			
+			$updateTimeStampFlagQesult = mysqli_query($connection,$updateTimeStampFlagQuery);
+			
+			
 
-			echo("<br> message insert result $messageInsertResult");
+			//echo("message insert result $messageInsertResult");
 		
 		}else if($messageOrUpdate == 2){
 			
@@ -84,11 +83,11 @@ if(isset($_POST['upDate'])){
 
 			$messageInsertResult = mysqli_query($connection, $messageInsertQuery);
 			
-			$hazardResolveQuery = "UPDATE flag SET hazard_Image=5, resolved=1 WHERE flag_ID=$message_ID;";
+			$hazardResolveQuery = "UPDATE flag SET flag_TimeStamp=now(), hazard_Image=5, resolved=1 WHERE flag_ID=$message_ID;";
 			
 			$hazardResolveResult = mysqli_query($connection, $hazardResolveQuery);
 
-			echo("<br> message insert result $messageInsertResult $hazardResolveResult");
+			//echo("<br> message insert result $messageInsertResult $hazardResolveResult");
 		}
 
 }else{
@@ -131,8 +130,6 @@ function getData($connection, $timeFrame){
         }
 
         $marker[$arrayIndex]['message']=$markerMessages;
-
-
 
         $arrayIndex++;
     }

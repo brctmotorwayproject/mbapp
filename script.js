@@ -1,36 +1,21 @@
 
-	
-/*
- * Google Maps documentation: http://code.google.com/apis/maps/documentation/javascript/basics.html
- * Geolocation documentation: http://dev.w3.org/geo/api/spec-source.html
- */
 
-//Map stored as a javascript object so other functions can access it properties.
+//Map stored as a javascript object with global scope so other functions can access it properties.
 var map;
 
 // Map Markers sotred in an array so they can be accessed later but other functions.
 var markerArray = [];
 
+//This stores the id that will be used to reference which marker has been click to have a message appened to it.
 var markerIDforUpdate;
 
+//this stores the object of the marker that will be used to mark a new location on the map.
 var voteMarker;
 
 //Variable set with default gps coordinates, this is used to center map initially if a your current location cannot be found.
 var defaultLatLng = new google.maps.LatLng(-45.7307748, 170.5857255);  // Default to Blueskin bay when no geolocation support
-
-var refreshMarkers = false;
-
-
-$(document).ready(function(){
-	$('#mapresize').click(function(){
-		setTimeout(function(){
-			google.maps.event.trigger(map,'resize');
-		}, 500);
-		
-	})
-
-
-});
+var currentLatLng ;
+//var refreshMarkers = false;
 
 
 $( document ).on( "pageinit", "#two", function() {
@@ -39,9 +24,12 @@ $( document ).on( "pageinit", "#two", function() {
 	if ( navigator.geolocation ) {
         function success(pos) {
             // Location found, show map with these coordinates
+			currentLatLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
             drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+			
         }
         function fail(error) {
+			currentLatLng = defaultLatLng ;
             drawMap(defaultLatLng);  // Failed to find location, show default map
 
         }
@@ -65,6 +53,7 @@ $( document ).on( "pageinit", "#two", function() {
 		//drawing map on webpage @ id map-canvas
         map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
 		
+		//This is used to highlight the blue skin bay area, by placing a red overlay over the location, this halps users find blueskin bay ont he map when they have moved away from it.
 		var blueskinArea = new google.maps.Circle({
 		    strokeColor: '#FF0000',
 			strokeOpacity: 0.8,
@@ -77,103 +66,99 @@ $( document ).on( "pageinit", "#two", function() {
 		
 		});
 		
-		//This waits for the map to be at idle after loading the web page. then Runs what ever is inside first set of brackets.
+		//This waits for the map to be at idle after loading the web page.Tthen Runs what ever is inside the first set of brackets.
 		google.maps.event.addListenerOnce( map, 'idle', function() {
 				
 				//print message to console, useful for debugging.
-				console.log('map at idle');
+				//console.log('map at idle');
 				
-					//This loads data from our webserver and draws markers from it on the map 
-
+					//This loads data from our webserver and draws markers from it on the map. 
 					drawAllMarkers();
-				
-				
+						
 				});
 
         
     }
-	
-	        function addMarker(location, map, iconPath, contentMessage) {
-            // Add the marker at the clicked location
-            var marker = new google.maps.Marker({
-                position: location,
-		
-                icon: iconPath,
-                map: map
-            });
-			
-			marker.addListener('click', function() {
-			
-				markerBubble.open(map, marker);
-				//$('#addMesPop').popup('open');
-			
-			});
+	//This function is passed details required to draw a marker with a information window and draws in on the map
+	function addMarker(location, map, iconPath, contentMessage) {
+
+		var marker = new google.maps.Marker({
+		position: location,
+		icon: iconPath,
+		map: map
+		});
+
+		// Add listend to marker, show inforwindo when clicked
+		marker.addListener('click', function() {
+
+		markerBubble.open(map, marker);
+
+		});
 
 			
 			
-			//add create speech bubble with text stored in contentMessage
-          var markerBubble = new google.maps.InfoWindow({
-                content: contentMessage
+		//add create speech bubble with text stored in contentMessage
+        var markerBubble = new google.maps.InfoWindow({
+			content: contentMessage
         });
-			//add speech bubble to map and marker created just above.
-        	//markerBubble.open(map, marker);
-			//add marker and bubble to array
-			markerArray.push([marker,markerBubble]);
+			//add speech bubble to map and marker created just above.    
+			//add marker and bubble to array to allow access to markers after iunstantation and allow them to be accessed and modified
+		markerArray.push([marker,markerBubble]);
 		
-		//print marker position to console - used for debug
-        	//console.log(marker.getPosition());
 		
-        }
+    }
 
 
+	//this function loads all markes from the data base and darws them on the map, if builds the string that is added to the inforwindow as well.
+	function drawAllMarkers(){
 		
-		function drawAllMarkers(){
+		jQuery.ajax({
+			//type of ajax call
+			type: 'GET',
+			//location of webpage that generates data in JSON format(RESTful)
+			url: 'http://54.254.182.76/locations.php',
+			success: function(mPoints) {
 
-			jQuery.ajax({
-				//type of ajax call
-				type: 'GET',
-				//location of webpage that generates data in JSON format(FESRful)
-				url: 'http://54.254.182.76/mapmob/locations.php',
-				success: function(mPoints) {
+				//on successfully getting data do the following
+				var	datas = $.parseJSON(mPoints);
+				//iterate through JSON array and convert data into map markers
+				$.each(datas, function(i, data) {
 
-					//on successfully getting data fdo the following
-					var	datas = $.parseJSON(mPoints);
-					//iterate through JSON array and convert data into map markers
-					$.each(datas, function(i, data) {
+					var LatLng = new google.maps.LatLng(data.latT , data.longT);
+					
+					// Build infowindow html and messages
+					var messagebox = "<div class='bubbles'>";
+					
+					$.each(data.message, function(i, message){
 
-						var messagebox = "<div class='bubbles'>";
-
-						var LatLng = new google.maps.LatLng(data.latT , data.longT);
-						//console.log()
-
-						$.each(data.message, function(i, message){
-
-							//console.log(message.message_Text);
-
-							messagebox += "<H3>" + message.mesDate + "</H3>" + "<p>" + message.message_Text +"</p>";
-						});
+						messagebox += "<H3>" + message.mesDate + "</H3>" + "<p>" + message.message_Text +"</p>";
 						
-						if(data.resolved == 0){
-						
-						messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-mail ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a> <a href='#resolveHazPop' data-rel='popup' data-position-to='window' data-transition='pop' class='ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Resolve Hazard</a></div>";
-						} else{
-							
-							messagebox += "<H3> Hazard Resolved</H3></div>";
-							
-						}
-						console.log(data.flag_ID);
-						
-						//$('#pp-12').click(function(){ window.fk =  });
-						addMarker(LatLng, map, data.hazard_Image, messagebox);
 					});
+					
+					if(data.resolved == 0){
+					
+					messagebox +=  "<a href='#addMesPop' data-rel='popup' data-position-to='window' data-transition='pop' class=' ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-mail ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Add Message</a> <a href='#resolveHazPop' data-rel='popup' data-position-to='window' data-transition='pop' class='ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-b' onclick='setMarkID("+ data.flag_ID +")' >Resolve Hazard</a></div>";
+					} else{
+						
+						messagebox += "<H3> Hazard Resolved</H3></div>";
+						
+					}
 
-				}
-			})
+					addMarker(LatLng, map, data.hazard_Image, messagebox);
+				});
 
-		}
+			},
+			
+			error: function() {
+				alert('Error loading web site makers, please check data connection and try again');
+			}
+		})
 
+	}
+	
+	//when the add marker button is clicked this function removes currently diaplayed markers and drops a movable marked onto the map
+	// that the user can drag to a location they want to identify as a hazard.
 	$('#voteButton').click(function(){
-		//deleteMarkers();
 		deleteOverlays();
 
 		voteMarker = new google.maps.Marker({
@@ -187,10 +172,11 @@ $( document ).on( "pageinit", "#two", function() {
 		 markerBubble = new google.maps.InfoWindow({
 			content: "<p class='bubbles'>Drag me to the location you want to report on.</p>"
 		});
-		//add speech bubble to map and marker created just above.
 		markerBubble.open(map, voteMarker);
 	});
-
+	
+	
+	//this function is run when the confim button is pushed, it builds a JSON object to be sent via ajax back to the server for storage in the database
 	$('#confirmButton').click(function(){
 	
 		$('#confirmLocation').hide();
@@ -198,11 +184,9 @@ $( document ).on( "pageinit", "#two", function() {
 		$('#viewButton').hide();
 
 		var iconSelected = $('input[name=radio-choice-b]:checked').val();
-		console.log(iconSelected);
+		
 		var $formMessage = $('#messageText');
 
-		//console.log(voteMarker.getPosition().lat());
-		//console.log(voteMarker.getPosition().lng());
 		var markerData = {
 			upDate: 0,
 			latT: voteMarker.getPosition().lat(),
@@ -212,11 +196,11 @@ $( document ).on( "pageinit", "#two", function() {
 
 		};
 		
-		console.log(markerData);
+		
 
 		$.ajax({
 			type: 'POST',
-			url: 'http://54.254.182.76/mapmob/locations.php',
+			url: 'http://54.254.182.76/locations.php',
 			data: markerData,
 			success: function(data) {
 				console.log(data['success']);
@@ -224,8 +208,8 @@ $( document ).on( "pageinit", "#two", function() {
 				drawAllMarkers();
 			},
 			error: function(data){
-				alert('error posting data');
-				console.log(data['error']);
+
+				alert('Error adding Marker to map, please check data connection and try again');
 			}
 		});
 
@@ -233,6 +217,8 @@ $( document ).on( "pageinit", "#two", function() {
 
 	});
 	
+	
+	//this functiin builds a JSON object to adda message to a marker already ont he map.
 	$('#confirmUpdate').click(function() {
 	
 		var formUpdateMessge = $('#updateText');
@@ -248,7 +234,7 @@ $( document ).on( "pageinit", "#two", function() {
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://54.254.182.76/mapmob/locations.php',
+			url: 'http://54.254.182.76/locations.php',
 			data: updateData,
 			success: function(data) {
 				console.log(data['success']);
@@ -256,14 +242,14 @@ $( document ).on( "pageinit", "#two", function() {
 				drawAllMarkers();
 			},
 			error: function(data){
-				alert('error posting data');
-				console.log(data['error']);
+				alert('Error adding message, please check data connection and try again');
 			}
 		});
 	
 	});
 	
-		$('#resolveHazard').click(function() {
+	//this function resolves a marker, it builds a JSON object when is sent to the back end for processing
+	$('#resolveHazard').click(function() {
 	
 		var formResolveMessge = $('#ResolveText');
 		
@@ -277,7 +263,7 @@ $( document ).on( "pageinit", "#two", function() {
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://54.254.182.76/mapmob/locations.php',
+			url: 'http://54.254.182.76/locations.php',
 			data: updateData,
 			success: function(data) {
 				console.log(data['success']);
@@ -291,48 +277,31 @@ $( document ).on( "pageinit", "#two", function() {
 		});
 	
 	});
+	
 
-	function deleteMarkers() {
-		clearMarkers();
-		markerArray = [];
-	}
-
-	function clearMarkers() {
-		setMapOnAll(null);
-	}
-
-	// Sets the map on all markers in the array.
-	function setMapOnAll(map) {
-		for (var i = 0; i < markerArray.length; i++) {
-			markerArray[i][0].setMap(map);
-		}
-	}
-
-
-
+	//delet all markers off the map
 	function deleteOverlays() {
 		if (markerArray) {
 			for (i in markerArray) {
 			
-			console.log(i);
+			
 				markerArray[i][0].setMap(null);
 			}
 			markerArray.length = 0;
 		}
 	}
 	
+	//the following functions are used to hide and display pop up forms and buttons 
 	$('#voteButton').click(function() { 
 	
 		$(this).hide();
-		$('#confirmLocation').show();
 		$('#viewButton').show();
+		$('#confirmLocation').show();
+		
 	
 	})
 	
 	$('#confirmLocation').click(function() {
-	
-		
-		//$('#voteButton').show();
 		
 		$('#popupDialog').popup('open');
 		
@@ -347,16 +316,8 @@ $( document ).on( "pageinit", "#two", function() {
 		drawAllMarkers();
 	})
 	
-	/*
-	$("a").on('click',function () {
-	
-			var mesidtest = $('a').data();
-			console.log(mesidtest);
-			
-			console.log('clicked');
-		
-	})
-	*/
+
+	/*Could be used in future to refresh markers
 	
 	setInterval(function() {
 		
@@ -365,22 +326,42 @@ $( document ).on( "pageinit", "#two", function() {
 		}
 		
 	}, 6000);
+	*/
 	
+	//this function address a bug where the map apears grey when moving from the main menu to the map, by resizing the map half a second after the page displays.
 	$('#mapresize').click(function() {
-	
-		google.maps.event.trigger(map,'resize');
-	
+		setTimeout(function(){
+			google.maps.event.trigger(map,'resize');
+			map.panTo(currentLatLng);
+		}, 500);
+		
 	})
+	
+	
+	$("#messageText").keyup(function(){
+	var str_length = $("#messageText").val().length;
+	$('#t1').html(str_length + " of 141");
+	})
+	
+	$("#updateText").keyup(function(){
+	var str_length = $("#updateText").val().length;
+	$('#t2').html(str_length + " of 141");
+	})
+	
+	$("#ResolveText").keyup(function(){
+	var str_length = $("#ResolveText").val().length;
+	$('#t3').html(str_length + " of 141");
+	})
+	
 	
 
 });
 
-function setMarkID(idnum){
 
+//Sets the markerIDforUpdate variable to the marker that was clicked on submitting a message to resolving a marker.
+function setMarkID(idnum){
 	
-	markerIDforUpdate = idnum;
-		
-	console.log('set message id to ' + markerIDforUpdate);
+	markerIDforUpdate = idnum;	
 
 }
 	

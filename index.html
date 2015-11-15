@@ -61,11 +61,12 @@
 		
 		<div class="ui-field-contain" data-role="fieldcontain">
 		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all ui-btn-b" data-form="ui-btn-up-a" data-theme="a" data-icon="star" id="voteButton">Add Marker</button>
+		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all ui-btn-b" data-form="ui-btn-up-a" data-theme="a" data-icon="star" id="confirmLocation" style="display: none">Confirm Location</button>
 		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all ui-btn-b" data-form="ui-btn-up-a" data-theme="a" data-icon="star"  style="display: none" id="viewButton">View Markers</button>
 		
 		
 		
-		<button class=" ui-btn ui-btn-a ui-icon-star ui-btn-icon-left ui-shadow ui-corner-all ui-btn-b" data-form="ui-btn-up-a" data-theme="a" data-icon="star" id="confirmLocation" style="display: none">Confirm Location</button>
+		
 		
 		<!-- Hidden form for message input-->
 		<div data-role="popup" id="popupDialog" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
@@ -73,8 +74,9 @@
 		<h1>Enter Message About Hazard</h1>
 		</div>
 		<div role="main" class="ui-content">
-        <input name="Message" id="messageText" value="" placeholder="Message" data-theme="a" type="text">
-				
+        <input name="Message" id="messageText" maxlength="141" value="" placeholder="Message" data-theme="a" type="text">
+		<div id=t1></div>
+		
 				<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
 				<legend>Select A Icon</legend>
 				<input name="radio-choice-b" id="radio-choice-c" value="1" checked="checked" type="radio">
@@ -109,8 +111,8 @@
 		<h1>Add Message</h1>
 		</div>
 		<div role="main" class="ui-content">
-        <input name="Message" id="updateText" value="" placeholder="Message" data-theme="a" type="text">
-		
+        <input name="Message" id="updateText" maxlength="141" value="" placeholder="Message" data-theme="a" type="text">
+		<div id=t2></div>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow" id="confirmUpdate">Confirm</a>
 		
@@ -123,8 +125,8 @@
 		<h1>Resolve Hazard</h1>
 		</div>
 		<div role="main" class="ui-content">
-        <input name="Message" id="ResolveText" value="" placeholder="Message" data-theme="a" type="text">
-		
+        <input name="Message" id="ResolveText" maxlength="141" value="" placeholder="Message" data-theme="a" type="text">
+		<div id=t3></div>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow" id="resolveHazard">Resolve</a>
         

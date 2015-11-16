@@ -182,6 +182,7 @@ $( document ).on( "pageinit", "#two", function() {
 		$('#confirmLocation').hide();
 		$('#voteButton').show();
 		$('#viewButton').hide();
+		$('#refreshButton').show();
 
 		var iconSelected = $('input[name=radio-choice-b]:checked').val();
 		
@@ -297,7 +298,7 @@ $( document ).on( "pageinit", "#two", function() {
 		$(this).hide();
 		$('#viewButton').show();
 		$('#confirmLocation').show();
-		
+		$('#refreshButton').hide();
 	
 	})
 	
@@ -312,8 +313,16 @@ $( document ).on( "pageinit", "#two", function() {
 		$(this).hide();
 		$('#voteButton').show();
 		$('#confirmLocation').hide();
+		$('#refreshButton').show();
 		voteMarker.setMap(null);
 		drawAllMarkers();
+	})
+	
+	$('#refreshButton').click(function() {
+		
+		deleteOverlays();
+		drawAllMarkers();
+	
 	})
 	
 
